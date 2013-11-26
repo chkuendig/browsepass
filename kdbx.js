@@ -96,6 +96,10 @@ function readKeyFile(dataView) {
     return key_data;
 }
 
+function decodeUtf8(value) {
+  return decodeURIComponent(escape(value));
+}
+
 function readKeePassFile(dataView, filePasswords) {
 	var sig1 = dataView.getUint32();
 	var sig2 = dataView.getUint32();
@@ -211,6 +215,7 @@ function readKeePassFile(dataView, filePasswords) {
   // ignore first 10 bytes (GZip header)
   gzipData = gzipData.substring(10);
   var xmlData = zip_inflate(gzipData);
+  xmlData = decodeUtf8(xmlData);
   assert(xmlData.indexOf("<?xml") == 0, "XML data is not valid");
   //alert(xmlData);
   var xml = (new DOMParser()).parseFromString(xmlData, "text/xml");
@@ -247,6 +252,7 @@ function readKeePassFile(dataView, filePasswords) {
           r[k] = String.fromCharCode(value.charCodeAt(k) ^ xorbuf[k]);
         }
         value = r.join("");
+        value = decodeUtf8(value);
       }
       properties[keys[j].textContent] = value;
     }
