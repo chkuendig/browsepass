@@ -9,6 +9,19 @@ var current_input = INPUT_NO_INPUT;
 
 var keyfile = null;
 
+// see http://stackoverflow.com/questions/8079674/jquery-ui-alert-dialog-as-a-replacement-for-alert
+function bp_alert(message) {
+    $("div.bp_alert").remove();
+    $("<div></div>").html(message).dialog({
+        title: "BrowsePass",
+        modal: true,
+        dialogClass: "bp_alert",
+        buttons: {
+            "OK": function() { $(this).dialog("close"); }
+        }
+    });
+}
+
 function clear_password() {
     $("#password").val("");
     $("#keyfile").css("background-color", "transparent");
@@ -104,7 +117,7 @@ function load_keepass() {
         };
         $("#load_unload").button(options);
     } catch (e) {
-        alert("Cannot open KeePass Database: " + e);
+        bp_alert("Cannot open KeePass Database: " + e);
     }
     $("#load_unload").removeAttr("disabled");
 }
@@ -122,7 +135,7 @@ function load_url(url) {
         }
     };
     oReq.onerror = function(e) {
-        alert("Cannot load URL " + url);
+        bp_alert("Cannot load URL " + url);
         $("#load_unload").removeAttr("disabled");
     };
     oReq.send(null);
@@ -149,7 +162,7 @@ $(document).ready(function() {
                 select_input(INPUT_LOCAL_FILE);
             };
             reader.onerror = function(e) {
-                alert("Cannot load local file " + file.name);
+                bp_alert("Cannot load local file " + file.name);
             };
             reader.readAsArrayBuffer(file);
         }
@@ -179,7 +192,7 @@ $(document).ready(function() {
                 $("#keyfile").css("background-color", "green");
             };
             reader.onerror = function(e) {
-                alert("Cannot load key file " + file.name);
+                bp_alert("Cannot load key file " + file.name);
             };
             reader.readAsArrayBuffer(file);
         }
