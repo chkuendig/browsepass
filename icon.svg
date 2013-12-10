@@ -14,8 +14,8 @@
             <rect x="50" y="128" fill="white" stroke="white" width="47" height="4" stroke-width="0" />
         </g>
         <g id="key">
-            <rect x="75" y="132" fill="black" width="125" height="30" rx="15" ry="15" />
-            <rect x="145" y="150" fill="black" width="40" height="35" rx="8" ry="8" />
+            <rect x="75" y="132" fill="black" width="125" height="28" rx="14" ry="14" />
+            <rect x="145" y="150" fill="black" width="40" height="28" rx="8" ry="8" />
         </g>
     </g>
 </svg>
