@@ -8,6 +8,11 @@
       "scripts": ["browsepass.chrome-app.js"]
     }
   },
+  "permissions": [
+    "http://*/",
+    "https://*/",
+    "ftp://*/"
+  ],
   "icons": {
     "16": "icon-16.png",
     "48": "icon-48.png",
