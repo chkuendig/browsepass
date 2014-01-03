@@ -23,18 +23,27 @@
         <img id="icon" src="icon-16.png" /> BrowsePass
     </h1>
     <div style="text-align: center;">
+        <div>
+            First provide the KDBX file.
+        </div>
         <div id="url_option" style="display: inline-block; width: 398px; padding-top: 20px; padding-bottom: 20px; border: 1px dotted grey;">
             <input type="text" id="url" name="url" style="width: 360px;" value="" />
         </div>
-        <div id="file_option" style="height: 4em; width: 398px; border: 1px dotted grey; line-height: 4em; margin: 0 auto;">Or drag &amp; drop your KDBX file here...</div>
+        <div id="file_option" style="height: 4em; width: 398px; border: 1px dotted grey; line-height: 4em; margin: 0 auto;">
+            <input type="file" id="file_select" /> Or drag&amp;drop...
+        </div>
         <div style="margin-top: 2em;">
             <div>
-                Then enter your password and click Unlock.
+                Then enter your password and/or pick a key file.
             </div>
             <input type="password" id="password" name="password" style="width: 360px;"/>
-            <div id="keyfile" style="height: 4em; width: 398px; border: 1px dotted grey; line-height: 4em; margin: 0 auto;">And/Or drag in a key file...</div>
+            <div id="keyfile" style="height: 4em; width: 398px; border: 1px dotted grey; line-height: 4em; margin: 0 auto;">
+                <input type="file" id="keyfile_select" /> Or drag&amp;drop...
+            </div>
         </div>
-
+        <div style="margin-top: 2em;">
+            And click Load.
+        </div>
         <div>
             <button id="load_unload">Load</button>
         </div>

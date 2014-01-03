@@ -25,6 +25,7 @@ function bp_alert(message) {
 function clear_password() {
     $("#password").val("");
     $("#keyfile").css("background-color", "transparent");
+    reset_form_element("#keyfile_select");
     keyfile = null;
 }
 
@@ -141,25 +142,33 @@ function load_url(url) {
     oReq.send(null);
 }
 
-$(document).ready(function() {
-    var dropzone = document.getElementById("file_option");
+// see http://stackoverflow.com/questions/1043957/clearing-input-type-file-using-jquery
+function reset_form_element(element_id) {
+    var e = $(element_id);
+    e.wrap("<form>").closest("form").get(0).reset();
+    e.unwrap();
+}
 
-    dropzone.ondragover = dropzone.ondragenter = function(event) {
+function handle_kdbx_file_with_reset(elem_id) {
+    function handle_kdbx_file(event) {
         event.stopPropagation();
         event.preventDefault();
-    };
 
-    dropzone.ondrop = function(event) {
-        event.stopPropagation();
-        event.preventDefault();
-
-        var filesArray = event.dataTransfer.files;
+        var filesArray = null;
+        if (event.type == "drop") {
+            filesArray = event.dataTransfer.files;
+        } else {
+            filesArray = event.target.files;
+        }
         if (filesArray.length > 0) {
             var file = filesArray[0];
             var reader = new FileReader();
             reader.onload = function(e) {
                 inputs[INPUT_LOCAL_FILE] = e.target.result;
                 select_input(INPUT_LOCAL_FILE);
+                if (elem_id != null) {
+                    reset_form_element(elem_id);
+                }
             };
             reader.onerror = function(e) {
                 bp_alert("Cannot load local file " + file.name);
@@ -168,20 +177,22 @@ $(document).ready(function() {
         }
 
         select_input(INPUT_LOCAL_FILE);
-    };
+    }
 
-    dropzone = document.getElementById("keyfile");
+    return handle_kdbx_file;
+}
 
-    dropzone.ondragover = dropzone.ondragenter = function(event) {
-        event.stopPropagation();
-        event.preventDefault();
-    };
-
-    dropzone.ondrop = function(event) {
+function handle_key_file_with_reset(elem_id) {
+    function handle_key_file(event) {
         event.stopPropagation();
         event.preventDefault();
 
-        var filesArray = event.dataTransfer.files;
+        var filesArray = null;
+        if (event.type == "drop") {
+            filesArray = event.dataTransfer.files;
+        } else {
+            filesArray = event.target.files;
+        }
         if (filesArray.length > 0) {
             var file = filesArray[0];
             var reader = new FileReader();
@@ -190,13 +201,40 @@ $(document).ready(function() {
                     e.target.result.length, true);
                 keyfile = readKeyFile(dataview);
                 $("#keyfile").css("background-color", "green");
+                if (elem_id != null) {
+                    reset_form_element(elem_id);
+                }
             };
             reader.onerror = function(e) {
                 bp_alert("Cannot load key file " + file.name);
             };
             reader.readAsArrayBuffer(file);
         }
+    }
+
+    return handle_key_file;
+}
+
+$(document).ready(function() {
+    var dropzone = document.getElementById("file_option");
+
+    dropzone.ondragover = dropzone.ondragenter = function(event) {
+        event.stopPropagation();
+        event.preventDefault();
     };
+
+    dropzone.ondrop = handle_kdbx_file_with_reset("#file_select");
+    $("#file_select").change(handle_kdbx_file_with_reset(null));
+
+    dropzone = document.getElementById("keyfile");
+
+    dropzone.ondragover = dropzone.ondragenter = function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+    };
+
+    dropzone.ondrop = handle_key_file_with_reset("#keyfile_select");
+    $("#keyfile_select").change(handle_key_file_with_reset(null));
 
     $("#load_unload").button( {
         label: "Load",
