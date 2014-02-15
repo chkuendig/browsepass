@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "BrowsePass",
   "description": "A read-only, web-enabled version of KeePass",
-  "version": "0.1",
+  "version": "0.2",
   "app": {
     "background": {
       "scripts": ["browsepass.chrome-app.js"]
