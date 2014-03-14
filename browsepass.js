@@ -41,6 +41,7 @@ function select_input(input_type) {
         if (v.length > 0 && v != default_url) {
             blocks["url_option"] = "green";
             current_input = input_type;
+            window.location.hash = "#" + v;
         }
         break;
     case INPUT_LOCAL_FILE:
