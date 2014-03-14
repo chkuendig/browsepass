@@ -264,7 +264,12 @@ $(document).ready(function() {
         }
     } );
 
-    $("#url").val(default_url);
+    var url_hash = window.location.hash.substring(1);
+    if (url_hash == "") {
+        $("#url").val(default_url);
+    } else {
+        $("#url").val(url_hash);
+    }
     $("#url").keyup(function(e) {
         if (e.keyCode == 13) {
             select_input(INPUT_REMOTE_URL);
