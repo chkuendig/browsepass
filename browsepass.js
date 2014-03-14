@@ -5,7 +5,7 @@ INPUT_LOCAL_FILE = 1;
 var default_url = "Enter URL to your KDBX file here...";
 
 var inputs = new Array(2)
-var current_input = INPUT_NO_INPUT; 
+var current_input = INPUT_NO_INPUT;
 
 var keyfile = null;
 
@@ -81,7 +81,7 @@ function show_entries(entries) {
             keyCell.appendChild(document.createTextNode(key));
             var valueCell = document.createElement("td");
             valueCell.appendChild(document.createTextNode(value));
-            
+
             row.appendChild(keyCell);
             row.appendChild(valueCell);
         }
