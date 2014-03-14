@@ -270,6 +270,8 @@ $(document).ready(function() {
         $("#url").val(default_url);
     } else {
         $("#url").val(url_hash);
+        select_input(INPUT_REMOTE_URL);
+        $("#password").focus();
     }
     $("#url").keyup(function(e) {
         if (e.keyCode == 13) {
