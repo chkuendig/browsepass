@@ -83,6 +83,7 @@ function show_entries(entries) {
             if (key == "URL") {
                 var link = document.createElement("a");
                 link.href = value;
+                link.target = "_blank";
                 link.appendChild(document.createTextNode(value));
                 valueCell.appendChild(link);
             } else {
