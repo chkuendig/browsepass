@@ -80,8 +80,14 @@ function show_entries(entries) {
             var keyCell = document.createElement("td");
             keyCell.appendChild(document.createTextNode(key));
             var valueCell = document.createElement("td");
-            valueCell.appendChild(document.createTextNode(value));
-            
+            if (key == "URL") {
+                var link = document.createElement("a");
+                link.href = value;
+                link.appendChild(document.createTextNode(value));
+                valueCell.appendChild(link);
+            } else {
+                valueCell.appendChild(document.createTextNode(value));
+            }
             row.appendChild(keyCell);
             row.appendChild(valueCell);
         }
