@@ -91,6 +91,7 @@ function show_entries(entries) {
                 valueCell.appendChild(document.createTextNode(value));
             }
 
+            row.appendChild(keyCell);
             row.appendChild(valueCell);
         }
     }
