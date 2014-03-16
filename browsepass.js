@@ -12,17 +12,27 @@ FORMATTERS["URL"] = function(value) {
 }
 
 FORMATTERS["Password"] = function(value) {
-    var span = document.createElement("input");
-    span.type = "text";
-    span.value = "--hover over--";
-    span.onmouseout = function(e) {
-        span.value = "--hover over--";
-        span.blur();
+    var text = document.createElement("input");
+    text.type = "text";
+    var mask = "-- hidden --";
+    text.value = mask;
+    text.disabled = true;
+    var button = document.createElement("button");
+    button.appendChild(document.createTextNode("Show/Hide"));
+    button.onclick = function(event) {
+        if (text.disabled) {
+            text.disabled = false;
+            text.value = value;
+            text.select();
+        } else {
+            text.disabled = true;
+            text.value = mask;
+            text.blur();
+        }
     }
-    span.onmouseover = function(e) {
-        span.value = value;
-        span.select();
-    };
+    var span = document.createElement("span");
+    span.appendChild(text);
+    span.appendChild(button);
     return span;
 }
 
