@@ -2,6 +2,21 @@ INPUT_NO_INPUT = -1;
 INPUT_REMOTE_URL = 0;
 INPUT_LOCAL_FILE = 1;
 
+function format_url(value) {
+    var link = document.createElement("a");
+    link.href = value;
+    link.target = "_blank";
+    link.appendChild(document.createTextNode(value));
+    return link;
+}
+
+function format_default(value) {
+    return document.createTextNode(value);
+}
+
+FORMATTERS = Array();
+FORMATTERS["URL"] = format_url;
+
 var default_url = "Enter URL to your KDBX file here...";
 
 var inputs = new Array(2)
@@ -81,15 +96,11 @@ function show_entries(entries) {
             var keyCell = document.createElement("td");
             keyCell.appendChild(document.createTextNode(key));
             var valueCell = document.createElement("td");
-            if (key == "URL") {
-                var link = document.createElement("a");
-                link.href = value;
-                link.target = "_blank";
-                link.appendChild(document.createTextNode(value));
-                valueCell.appendChild(link);
-            } else {
-                valueCell.appendChild(document.createTextNode(value));
+            var formatter = FORMATTERS[key];
+            if (formatter == undefined) {
+                formatter =  format_default;
             }
+            valueCell.appendChild(formatter(value));
 
             row.appendChild(keyCell);
             row.appendChild(valueCell);
