@@ -2,7 +2,8 @@ INPUT_NO_INPUT = -1;
 INPUT_REMOTE_URL = 0;
 INPUT_LOCAL_FILE = 1;
 
-function format_url(value) {
+FORMATTERS = Array();
+FORMATTERS["URL"] = function(value) {
     var link = document.createElement("a");
     link.href = value;
     link.target = "_blank";
@@ -10,12 +11,24 @@ function format_url(value) {
     return link;
 }
 
+FORMATTERS["Password"] = function(value) {
+    var span = document.createElement("input");
+    span.type = "text";
+    span.value = "--hover over--";
+    span.onmouseout = function(e) {
+        span.value = "--hover over--";
+        span.blur();
+    }
+    span.onmouseover = function(e) {
+        span.value = value;
+        span.select();
+    };
+    return span;
+}
+
 function format_default(value) {
     return document.createTextNode(value);
 }
-
-FORMATTERS = Array();
-FORMATTERS["URL"] = format_url;
 
 var default_url = "Enter URL to your KDBX file here...";
 
