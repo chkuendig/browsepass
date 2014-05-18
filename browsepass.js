@@ -314,6 +314,9 @@ $(document).ready(function() {
                 load_url(url);
             } else if (current_input == INPUT_LOCAL_FILE) {
                 load_keepass();
+            } else {
+                bp_alert("Please specify an URL or a local file.");
+                $(this).removeAttr("disabled");
             }
         } else {
             clear_password();
