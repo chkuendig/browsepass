@@ -6,7 +6,9 @@ readKeePassFile(dataView, filePasswords):
 
     * dataView: a jDataView instance of the byte array
                 representing a KeePass file
-    * filePasswords: the passwords (array of strings) to open this file
+    * filePasswords: the passwords (array of strings) to open this file.
+                These passwords must be the return values of
+                readPassword and readKeyFile functions.
 
   Returns: An array of objects whose fields are:
 
