@@ -57,43 +57,43 @@ function evaluateXPath(aNode, aExpr) {
 }
 
 function readPassword(password) {
-    return CryptoJS.SHA256(password);
+  return CryptoJS.SHA256(password);
 }
 
 function readKeyFile(dataView) {
-    var file_data = dataView.getString();
-    var xml = (new DOMParser()).parseFromString(file_data, "text/xml");
-    var key_data = evaluateXPath(xml, "//KeyFile/Key/Data");
-    if (key_data.length > 0) {
-        // test XML key file
-        key_data = atob(key_data[0].textContent);
-        if (key_data.length == 32) {
-            key_data = CryptoJS.enc.Latin1.parse(key_data);
-        } else {
-            key_data = null;
-        }
+  var file_data = dataView.getString();
+  var xml = (new DOMParser()).parseFromString(file_data, "text/xml");
+  var key_data = evaluateXPath(xml, "//KeyFile/Key/Data");
+  if (key_data.length > 0) {
+    // test XML key file
+    key_data = atob(key_data[0].textContent);
+    if (key_data.length == 32) {
+      key_data = CryptoJS.enc.Latin1.parse(key_data);
     } else {
+      key_data = null;
+    }
+  } else {
+    key_data = null;
+  }
+  if (key_data == null) {
+    // not XML key file
+    if (file_data.length == 32) {
+      // test 32-byte key file
+      key_data = CryptoJS.enc.Latin1.parse(file_data);
+    } else if (file_data.length == 64) {
+      // not 32-byte key, test 64-byte hex encoded
+      key_data = CryptoJS.enc.Hex.parse(file_data);
+      if (key_data.length != 32) {
         key_data = null;
+      }
     }
-    if (key_data == null) {
-        // not XML key file
-        if (file_data.length == 32) {
-            // test 32-byte key file
-            key_data = CryptoJS.enc.Latin1.parse(file_data);
-        } else if (file_data.length == 64) {
-            // not 32-byte key, test 64-byte hex encoded
-            key_data = CryptoJS.enc.Hex.parse(file_data);
-            if (key_data.length != 32) {
-                key_data = null;
-            }
-        }
-    }
-    if (key_data == null) {
-        // not XML and not key file
-        key_data = CryptoJS.enc.Latin1.parse(file_data);
-        key_data = CryptoJS.SHA256(key_data);
-    }
-    return key_data;
+  }
+  if (key_data == null) {
+    // not XML and not key file
+    key_data = CryptoJS.enc.Latin1.parse(file_data);
+    key_data = CryptoJS.SHA256(key_data);
+  }
+  return key_data;
 }
 
 function decodeUtf8(value) {
@@ -101,10 +101,10 @@ function decodeUtf8(value) {
 }
 
 function readKeePassFile(dataView, filePasswords) {
-	var sig1 = dataView.getUint32();
-	var sig2 = dataView.getUint32();
-	assert(sig1 == 0x9AA2D903, "Invalid version");
-	assert(sig2 == 0xB54BFB67, "Invalid version");
+  var sig1 = dataView.getUint32();
+  var sig2 = dataView.getUint32();
+  assert(sig1 == 0x9AA2D903, "Invalid version");
+  assert(sig2 == 0xB54BFB67, "Invalid version");
   var fileVersion = dataView.getUint32();
   assert(fileVersion == 0x00030001, "Invalid file version");
 
