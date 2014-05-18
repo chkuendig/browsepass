@@ -194,6 +194,10 @@ function load_url(url) {
     oReq.open("GET", url, true);
     oReq.responseType = "arraybuffer";
     oReq.onload = function (oEvent) {
+        if (this.status != 200) {
+            this.onerror(oEvent);
+            return;
+        }
         var arrayBuffer = oReq.response; // Note: not oReq.responseText
         if (arrayBuffer) {
             inputs[INPUT_REMOTE_URL] = arrayBuffer;
