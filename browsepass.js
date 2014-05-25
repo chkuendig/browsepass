@@ -191,6 +191,7 @@ function load_keepass() {
 function load_url(url) {
     /* jQuery does not support arraybuffer yet. so have to do XHR */
     var oReq = new XMLHttpRequest();
+    oReq.withCredentials = true;
     oReq.open("GET", url, true);
     oReq.responseType = "arraybuffer";
     oReq.onload = function (oEvent) {
