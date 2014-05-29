@@ -134,7 +134,18 @@ function show_entries(entries) {
         var tbody = document.createElement("tbody");
         table.appendChild(tbody);
 
+        var fields = ["Title", "UserName", "Password", "URL", "Notes"];
         for (var key in entry) {
+            if (fields.indexOf(key) >= 0) {
+                continue;
+            }
+            fields.push(key);
+        }
+        while (fields.length > 0) {
+            var key = fields.shift();
+            if (!entry.hasOwnProperty(key)) {
+                continue;
+            }
             var row = document.createElement("tr");
             tbody.appendChild(row);
             var value = entry[key];
