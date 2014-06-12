@@ -102,7 +102,7 @@ function decodeUtf8(value) {
   return decodeURIComponent(escape(value));
 }
 
-function readKeePassFile(dataView, filePasswords) {
+function readHeader(dataView) {
   var sig1 = dataView.getUint32();
   var sig2 = dataView.getUint32();
   assert(sig1 == 0x9AA2D903, "Invalid version");
@@ -135,25 +135,18 @@ function readKeePassFile(dataView, filePasswords) {
     "Not Salsa20 CrsAlgorithm");
   assert(header[CipherID] == ("\x31\xC1\xF2\xE6\xBF\x71\x43\x50" +
     "\xBE\x58\x05\x21\x6A\xFC\x5A\xFF"), "Not AES");
+  return header;
+}
 
-  var compositeKey = "";
-  for (var i = 0; i < filePasswords.length; ++i) {
-    var regular = filePasswords[i];
-    compositeKey += regular.toString(CryptoJS.enc.Hex);
-  }
-  compositeKey = CryptoJS.enc.Hex.parse(compositeKey);
-  //alert("Composite Key: " + compositeKey);
-  compositeKey = CryptoJS.SHA256(compositeKey).toString(CryptoJS.enc.Hex);
-  compositeKey = compositeKey.toString(CryptoJS.enc.Hex);
-  //alert("Hashed Composite Key: " + compositeKey);
+function transformKey(compositeKey, transformSeed, transformRounds) {
   var tmpKey = {};
   tmpKey[0] = CryptoJS.enc.Hex.parse(compositeKey.substring(0, 32));
   tmpKey[1] = CryptoJS.enc.Hex.parse(compositeKey.substring(32, 64));
   //alert(tmpKey[0]);
   //alert(tmpKey[1]);
-  var key = CryptoJS.enc.Latin1.parse(header[TransformSeed]);
+  var key = CryptoJS.enc.Latin1.parse(transformSeed);
   var iv = CryptoJS.enc.Hex.parse((new Array(16)).join("\x00"));
-  for (var i = 0; i < header[TransformRounds]; ++i) {
+  for (var i = 0; i < transformRounds; ++i) {
     for (var j = 0; j < 2; ++j) {
       var encrypted = CryptoJS.AES.encrypt(tmpKey[j], key,
         { mode: CryptoJS.mode.ECB, iv: iv,
@@ -170,31 +163,37 @@ function readKeePassFile(dataView, filePasswords) {
     tmpKey[1].toString(CryptoJS.enc.Hex)
   );
   var transformedKey = CryptoJS.SHA256(tmpKey).toString(CryptoJS.enc.Hex);
+  return transformedKey
+}
+
+function concatPasswords(passwords) {
+  var compositeKey = "";
+  for (var i = 0; i < passwords.length; ++i) {
+    var regular = passwords[i];
+    compositeKey += regular.toString(CryptoJS.enc.Hex);
+  }
+  compositeKey = CryptoJS.enc.Hex.parse(compositeKey);
+  //alert("Composite Key: " + compositeKey);
+  compositeKey = CryptoJS.SHA256(compositeKey).toString(CryptoJS.enc.Hex);
+  return compositeKey;
+}
+
+function deriveAesKey(passwords, masterSeed, transformSeed, transformRounds) {
+  var compositeKey = concatPasswords(passwords);
+  //alert("Hashed Composite Key: " + compositeKey);
+
+  var transformedKey = transformKey(compositeKey,
+    transformSeed, transformRounds);
   //alert("Transformed Key: " + transformedKey);
-  var masterSeed = CryptoJS.enc.Latin1.parse(header[MasterSeed]);
+  var masterSeed = CryptoJS.enc.Latin1.parse(masterSeed);
   masterSeed = masterSeed.toString(CryptoJS.enc.Hex);
   var combinedKey = CryptoJS.enc.Hex.parse(masterSeed + transformedKey);
   //alert(combinedKey);
   var aesKey = CryptoJS.SHA256(combinedKey);
-  //alert("AES Key: " + aesKey);
-  var aesIV = CryptoJS.enc.Latin1.parse(header[EncryptionIV]);
-  //alert("AES IV: " + aesIV);
-  var encryptedData = dataView.getString();
-  encryptedData = CryptoJS.enc.Latin1.parse(encryptedData);
-  var cipherParams = CryptoJS.lib.CipherParams.create( {
-    ciphertext: encryptedData,
-  } );
-  var decryptedData = CryptoJS.AES.decrypt(cipherParams, aesKey,
-    { mode: CryptoJS.mode.CBC, iv: aesIV,
-      padding: CryptoJS.pad.Pkcs7 } );
-  //alert("Decrypted: " + decryptedData);
-  decryptedData = decryptedData.toString(CryptoJS.enc.Latin1);
+  return aesKey;
+}
 
-  dataView = new jDataView(decryptedData, 0, decryptedData.length, true);
-  var decryptedStartBytes = dataView.getString(32);
-  assert(decryptedStartBytes == header[StreamStartBytes],
-    "Start bytes do not match");
-
+function readGzipData(dataView) {
   var gzipData = "";
   var blockId = 0;
   while (true) {
@@ -214,13 +213,56 @@ function readKeePassFile(dataView, filePasswords) {
       "Block hash does not match");
     gzipData += blockData;
   }
+  return gzipData;
+}
+
+function decryptVault(data, aesKey, aesIV, startBytes) {
+  var encryptedData = CryptoJS.enc.Latin1.parse(data);
+  var cipherParams = CryptoJS.lib.CipherParams.create( {
+    ciphertext: encryptedData,
+  } );
+  var decryptedData = CryptoJS.AES.decrypt(cipherParams, aesKey,
+    { mode: CryptoJS.mode.CBC, iv: aesIV,
+      padding: CryptoJS.pad.Pkcs7 } );
+  //alert("Decrypted: " + decryptedData);
+  decryptedData = decryptedData.toString(CryptoJS.enc.Latin1);
+
+  var dataView = new jDataView(decryptedData, 0, decryptedData.length, true);
+  var decryptedStartBytes = dataView.getString(32);
+  assert(decryptedStartBytes == startBytes,
+    "Start bytes do not match (wrong password?)");
+
+  var gzipData = readGzipData(dataView);
   // ignore first 10 bytes (GZip header)
   gzipData = gzipData.substring(10);
+
   var xmlData = zip_inflate(gzipData);
   xmlData = decodeUtf8(xmlData);
   assert(xmlData.indexOf("<?xml") == 0, "XML data is not valid");
+  return xmlData;
+}
+
+function readHeaderAndXml(dataView, filePasswords) {
+  var header = readHeader(dataView);
+  var aesKey = deriveAesKey(filePasswords, header[MasterSeed],
+    header[TransformSeed], header[TransformRounds]);
+  //alert("AES Key: " + aesKey);
+  var aesIV = CryptoJS.enc.Latin1.parse(header[EncryptionIV]);
+  //alert("AES IV: " + aesIV);
+
+  var encryptedData = dataView.getString();
+  var xmlData = decryptVault(encryptedData, aesKey, aesIV,
+    header[StreamStartBytes]);
   //alert(xmlData);
   var xml = (new DOMParser()).parseFromString(xmlData, "text/xml");
+  return {header: header, xml: xml};
+}
+
+function readKeePassFile(dataView, filePasswords) {
+  var vault = readHeaderAndXml(dataView, filePasswords);
+  var header = vault.header;
+  var xml = vault.xml;
+
   var keepassEntries = new Array();
   var entries = evaluateXPath(xml, "//Entry");
 
