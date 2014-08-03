@@ -17,7 +17,7 @@ var openController = BrowsePassControllers.controller('OpenController', ['$scope
         $scope.clear();
 
         $scope.$watch('sources.file', function(newValue, oldValue) {
-            if (newValue != oldValue) {
+            if (newValue != oldValue && newValue.hasOwnProperty('name')) {
                 $scope.selectedSource = 'File';
             }
         }, true);
