@@ -1,0 +1,16 @@
+<div ng-controller="GroupController">
+    <accordion close-others="true">
+        <accordion-group is-open="group.expanded">
+            <accordion-heading>
+                {{group.name}}
+                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': group.expanded, 'glyphicon-chevron-right': !group.expanded}"></i>
+            </accordion-heading>
+            <accordion close-others="true">
+                <div ng-repeat="entry in entries" ng-controller="EntryController">
+                    <div ng-include="'components/entry/entry-template.html'"></div>
+                </div>
+            </accordion>
+            <div ng-repeat="group in groups" ng-include="'components/group/group-template.html'"></div>
+        </accordion-group>
+    </accordion>
+</div>

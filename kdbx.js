@@ -242,30 +242,7 @@ function decryptVault(data, aesKey, aesIV, startBytes) {
   return xmlData;
 }
 
-function readHeaderAndXml(dataView, filePasswords) {
-  var header = readHeader(dataView);
-  var aesKey = deriveAesKey(filePasswords, header[MasterSeed],
-    header[TransformSeed], header[TransformRounds]);
-  //alert("AES Key: " + aesKey);
-  var aesIV = CryptoJS.enc.Latin1.parse(header[EncryptionIV]);
-  //alert("AES IV: " + aesIV);
-
-  var encryptedData = dataView.getString();
-  var xmlData = decryptVault(encryptedData, aesKey, aesIV,
-    header[StreamStartBytes]);
-  //alert(xmlData);
-  var xml = (new DOMParser()).parseFromString(xmlData, "text/xml");
-  return {header: header, xml: xml};
-}
-
-function readKeePassFile(dataView, filePasswords) {
-  var vault = readHeaderAndXml(dataView, filePasswords);
-  var header = vault.header;
-  var xml = vault.xml;
-
-  var keepassEntries = new Array();
-  var entries = evaluateXPath(xml, "//Entry");
-
+function decryptProtectedValues(header, xml) {
   var hashedProtectedStreamKey = CryptoJS.SHA256(
     CryptoJS.enc.Latin1.parse(header[ProtectedStreamKey]));
   //alert("ProtectedStreamKey: " + hashedProtectedStreamKey);
@@ -280,31 +257,59 @@ function readKeePassFile(dataView, filePasswords) {
   var iv = new Uint8Array([0xE8, 0x30, 0x09, 0x4B, 0x97, 0x20, 0x5D, 0x2A]);
   var salsa = new Salsa20(salsaKey, iv);
 
+  var protectedValues = evaluateXPath(xml, '//Value[@Protected="True"]');
+  for (var i in protectedValues) {
+    var valueNode = protectedValues[i];
+    var value = valueNode.textContent;
+    value = atob(value);
+    var xorbuf = salsa.getBytes(value.length);
+    //alert("xorbuf: " + xorbuf);
+    var r = new Array();
+    for (var k = 0; k < value.length; ++k) {
+      r[k] = String.fromCharCode(value.charCodeAt(k) ^ xorbuf[k]);
+    }
+    value = r.join("");
+    value = decodeUtf8(value);
+    valueNode.textContent = value;
+  }
+}
+
+function readHeaderAndXml(dataView, filePasswords) {
+  var header = readHeader(dataView);
+  var aesKey = deriveAesKey(filePasswords, header[MasterSeed],
+    header[TransformSeed], header[TransformRounds]);
+  //alert("AES Key: " + aesKey);
+  var aesIV = CryptoJS.enc.Latin1.parse(header[EncryptionIV]);
+  //alert("AES IV: " + aesIV);
+
+  var encryptedData = dataView.getString();
+  var xmlData = decryptVault(encryptedData, aesKey, aesIV,
+    header[StreamStartBytes]);
+  //alert(xmlData);
+  var xml = (new DOMParser()).parseFromString(xmlData, "text/xml");
+  decryptProtectedValues(header, xml);
+  return {header: header, xml: xml};
+}
+
+function readKeePassFile(dataView, filePasswords) {
+  var vault = readHeaderAndXml(dataView, filePasswords);
+  var header = vault.header;
+  var xml = vault.xml;
+
+  var keepassEntries = new Array();
+  var entries = evaluateXPath(xml, "//Group/Entry");
+
   for (var i in entries) {
     var keys = evaluateXPath(entries[i], "String/Key");
     var values = evaluateXPath(entries[i], "String/Value");
     assert(keys.length == values.length, "different key and value sizes");
     var properties = {};
     for (var j in keys) {
+      var key = keys[j].textContent;
       var value = values[j].textContent;
-      if (values[j].getAttribute("Protected") == "True") {
-        value = atob(value);
-        var xorbuf = salsa.getBytes(value.length);
-        //alert("xorbuf: " + xorbuf);
-        var r = new Array();
-        for (var k = 0; k < value.length; ++k) {
-          r[k] = String.fromCharCode(value.charCodeAt(k) ^ xorbuf[k]);
-        }
-        value = r.join("");
-        value = decodeUtf8(value);
-      }
-      properties[keys[j].textContent] = value;
+      properties[key] = value;
     }
     //alert("Password: " + properties["Password"]);
-    if (entries[i].parentNode.nodeName == "History") {
-      // ignore History
-      continue;
-    }
     keepassEntries.push(properties);
   }
 
