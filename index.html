@@ -49,6 +49,10 @@
         <div ng-include="'components/open/open-template.html'"></div>
     </div>
 
+    <div ng-if="isLoaded()" class="btn-group well-sm">
+        <button class="btn btn-default btn-xs" btn-checkbox ng-model="appConfig.showGroups">Show Groups</button>
+    </div>
+
     <div ng-controller="GroupController">
         <div ng-repeat="group in groups" ng-include="'components/group/group-template.html'"></div>
     </div>

@@ -44,6 +44,9 @@ function escapeXPath(s) {
 var vaultService = BrowsePassServices.factory('VaultService', ['$rootScope',
     function($rootScope) {
         var service = {};
+        service.isLoaded = function() {
+            return service.xml != null;
+        }
         service.load = function(stream, key) {
             var obj = readHeaderAndXml(stream, key);
             service.xml = obj.xml;
