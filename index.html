@@ -39,6 +39,7 @@
     <script src="components/vault/vault-service.js" type="text/javascript"></script>
     <script src="components/file-input/dropzone-directive.js" type="text/javascript"></script>
     <script src="components/file-input/receiver-directive.js" type="text/javascript"></script>
+    <script src="components/hotkey/hotkey-directive.js" type="text/javascript"></script>
     <script src="components/open/open-controller.js" type="text/javascript"></script>
     <script src="components/group/group-controller.js" type="text/javascript"></script>
     <script src="components/entry/entry-controller.js" type="text/javascript"></script>
@@ -49,8 +50,16 @@
         <div ng-include="'components/open/open-template.html'"></div>
     </div>
 
-    <div ng-if="isLoaded()" class="btn-group well-sm">
-        <button class="btn btn-default btn-xs" btn-checkbox ng-model="appConfig.showGroups">Show Groups</button>
+    <div ng-if="isLoaded()" class="input-group well-sm">
+        <span class="input-group-btn">
+            <button class="btn btn-default" btn-checkbox ng-model="appConfig.showGroups">Show Groups</button>
+        </span>
+        <input type="text" class="form-control" placeholder="Filter" ng-model="appConfig.filter" hotkey="{ctrlKey: true, keyCode: 'F'.charCodeAt(0)}" />
+        <span class="input-group-btn">
+            <button class="btn" ng-class="{'btn-info': appConfig.filter, 'btn-default': !appConfig.filter}" ng-disabled="!appConfig.filter" ng-click="appConfig.filter=''">
+                <i class="glyphicon glyphicon-filter"></i>
+            </button>
+        </span>
     </div>
 
     <div ng-controller="GroupController">
