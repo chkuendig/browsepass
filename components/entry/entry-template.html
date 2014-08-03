@@ -8,7 +8,8 @@
             <tr><th>Field</th><th>Value</th></tr>
         </thead>
         <tbody>
-            <tr ng-repeat="field in entry.fields" field-renderer="field" />
+            <tr ng-repeat="field in getFields(true)" field-renderer="field" />
+            <tr ng-repeat="field in getFields(false)" field-renderer="field" />
         </tbody>
     </table>
 </accordion-group>
