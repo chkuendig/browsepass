@@ -1,7 +1,7 @@
 'use strict';
 
-var dropzoneDirective = BrowsePassDirectives.directive('fileReceiver', [
-    function() {
+var dropzoneDirective = BrowsePassDirectives.directive('fileReceiver', ['DialogService',
+    function(dialogService) {
         return {
             scope: {
                 destination: '=fileReceiver',
@@ -22,7 +22,8 @@ var dropzoneDirective = BrowsePassDirectives.directive('fileReceiver', [
                             })
                         };
                         reader.onerror = function(e) {
-                            // TODO XXX FIXME: handle this
+                            dialogService.alert('BrowsePass', 'File ' + file.name + ' is not readable. ' +
+                                'Please make sure you have permission to read such file.');
                         };
                         reader.readAsArrayBuffer(file);
                     }

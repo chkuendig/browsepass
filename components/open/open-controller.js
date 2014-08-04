@@ -1,7 +1,7 @@
 'use strict';
 
-var openController = BrowsePassControllers.controller('OpenController', ['$scope', '$http', 'VaultService',
-    function($scope, $http, vaultService) {
+var openController = BrowsePassControllers.controller('OpenController', ['$scope', '$http', 'DialogService', 'VaultService',
+    function($scope, $http, dialogService, vaultService) {
         $scope.clear = function() {
             $scope.sources = {};
             $scope.sources.file = {};
@@ -61,12 +61,17 @@ var openController = BrowsePassControllers.controller('OpenController', ['$scope
                     keystream = new jDataView(keystream, 0, keystream.byteLength, true);
                     key += readKeyFile(keystream);
                 }
+                if (key == '') {
+                    dialogService.alert('BrowsePass', 'Please supply a password, or a key file, or both, to open the vault.');
+                    $scope.loading = false;
+                    return;
+                }
                 try {
                     vaultService.load(stream, key);
                     $scope.loaded = true;
                     $scope.clear();
                 } catch (ex) {
-                    // TODO FIXME handle this
+                    dialogService.alert('BrowsePass', ex);
                 }
                 $scope.loading = false;
             }
@@ -81,7 +86,12 @@ var openController = BrowsePassControllers.controller('OpenController', ['$scope
                         var stream = new jDataView(data, 0, data.byteLength, true);
                         loadStream(stream);
                     }).error(function(data, status, headers, config) {
-                        // TODO XXX FIXME handle this
+                        if (status == 404) {
+                            dialogService.alert('BrowsePass', 'The provided URL is not found.');
+                        } else {
+                            dialogService.alert('BrowsePass', 'The provided URL cannot be reached. ' +
+                                'This is often due to insufficient cross origin resource sharing policy.');
+                        }
                         $scope.loading = false;
                     });
             }
@@ -92,7 +102,9 @@ var openController = BrowsePassControllers.controller('OpenController', ['$scope
                 stream = new jDataView(stream, 0, stream.byteLength, true);
                 loadStream(stream);
             } else {
-                // TODO XXX Handle this
+                dialogService.alert('BrowsePass',
+                    'Please specify the vault. ' +
+                    'You can enter a URL, or drag and drop a local file in.');
                 $scope.loading = false;
             }
         }
