@@ -1,11 +1,11 @@
 <!doctype html>
-<html ng-app="BrowsePassApp">
+<html ng-app="BrowsePassApp" ng-csp >
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <style>
-        body { overflow-y: scroll; }
+        body { overflow-y: scroll; -webkit-user-select: text; }
         .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
         .panel-group { margin-bottom: 5px; }
         .panel-body { padding-right: 0px; margin-right: -1px;}

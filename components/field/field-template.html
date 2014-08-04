@@ -1,12 +1,12 @@
 <tr>
     <td>{{field.name}}</td>
     <td>
-        <span ng-show="!masked" ng-click="select()" ng-switch="field.name">
+        <span ng-if="!masked" ng-click="select()" ng-switch="field.name">
                 <span ng-switch-when="URL">
                     <a href="{{field.value}}" target="_blank">{{field.value}}</a>
                 </span>
                 <span ng-switch-default>{{field.value}}</span>
         </span>
-        <button class="btn btn-default" ng-show="masked" ng-click="unmask()">Show</button>
+        <button class="btn btn-default" ng-if="masked" ng-click="unmask()">Show</button>
     </td>
 </tr>

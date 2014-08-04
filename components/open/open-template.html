@@ -1,5 +1,5 @@
-<h3><span ng-show="!loaded">Open</span> Database</h3>
-<div ng-show="!loaded">
+<h3><span ng-if="!loaded">Open</span> Database</h3>
+<div ng-if="!loaded">
     <h4>Location</h4>
     <div>
         <div class="input-group">
@@ -44,7 +44,7 @@
     </div>
 </div>
 <h4>
-    <button ng-show="!loaded" ng-disabled="loading" class="btn btn-primary" ng-click="load()">Load</button>
-    <button ng-show="!loaded" class="btn btn-primary" ng-click="clear()">Clear</button>
-    <button ng-show="loaded" class="btn btn-primary" ng-click="unload()">Unload</button>
+    <button ng-if="!loaded" ng-disabled="loading" class="btn btn-primary" ng-click="load()">Load</button>
+    <button ng-if="!loaded" class="btn btn-primary" ng-click="clear()">Clear</button>
+    <button ng-if="loaded" class="btn btn-primary" ng-click="unload()">Unload</button>
 </h4>
