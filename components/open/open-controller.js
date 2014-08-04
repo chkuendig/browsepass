@@ -38,7 +38,7 @@ var openController = BrowsePassControllers.controller('OpenController', ['$scope
         });
 
         $scope.$watch('credentials.file', function(newValue, oldValue) {
-            if (newValue != oldValue) {
+            if (newValue != oldValue && newValue.hasOwnProperty('name')) {
                 $scope.selectedCredentials.file = true;
             }
         }, true);
