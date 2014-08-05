@@ -7,6 +7,14 @@ var appController = BrowsePassControllers.controller('AppController', ['$scope',
         $scope.appConfig.showGroups = false;
         // Search term to filter the list.
         $scope.appConfig.filter = '';
+        $scope.loadedGoogleApis = {
+            auth: false,
+            picker: false,
+            drive: false,
+        }
+        $scope.canOpenGDrive = function() {
+            return ($scope.loadedGoogleApis.auth && $scope.loadedGoogleApis.picker && $scope.loadedGoogleApis.drive);
+        }
         $scope.isLoaded = function() {
             return vaultService.isLoaded();
         }

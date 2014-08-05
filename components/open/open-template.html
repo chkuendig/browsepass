@@ -8,6 +8,17 @@
             </span>
             <input id="sourceUrl" type="text" class="form-control" ng-model="sources.url" />
         </div>
+        <div class="input-group">
+            <span class="input-group-btn">
+                <label class="btn btn-default" btn-radio="'GDrive'" ng-model="selectedSource" ng-disabled="!sources.gdrive.name">GDrive</label>
+            </span>
+            <input type="text" class="form-control" ng-model="sources.gdrive.name" readonly />
+            <span class="input-group-btn">
+                <span class="btn btn-default" ng-click="openGDrive()" ng-disabled="!canOpenGDrive()">
+                    Browse&hellip;
+                </span>
+            </span>
+        </div>
         <div class="input-group" file-dropzone="sources.file">
             <span class="input-group-btn">
                 <label class="btn btn-default" btn-radio="'File'" ng-model="selectedSource" ng-disabled="!sources.file.name">File</label>
