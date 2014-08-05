@@ -1,12 +1,12 @@
 'use strict';
 
-var openController = BrowsePassControllers.controller('OpenController', ['$scope', '$http', 'DialogService', 'VaultService',
-    function($scope, $http, dialogService, vaultService) {
+var openController = BrowsePassControllers.controller('OpenController', ['$scope', '$http', '$location', 'DialogService', 'VaultService',
+    function($scope, $http, $location, dialogService, vaultService) {
         $scope.clear = function() {
             $scope.sources = {};
             $scope.sources.file = {};
             $scope.sources.gdrive = {};
-            $scope.sources.url = '';
+            $scope.sources.url = $location.hash();
             $scope.selectedSource = null;
 
             $scope.credentials = {};

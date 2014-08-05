@@ -11,6 +11,9 @@ var BrowsePassApp = angular.module('BrowsePassApp', [
     'BrowsePassDirectives',
     'BrowsePassServices',
 ]);
+BrowsePassApp.config(function($locationProvider) {
+    $locationProvider.html5Mode(true);
+})
 var BrowsePassControllers = angular.module('BrowsePassControllers', []);
 var BrowsePassDirectives = angular.module('BrowsePassDirectives', []);
 var BrowsePassServices = angular.module('BrowsePassServices', []);
