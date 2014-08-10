@@ -4,13 +4,13 @@
     <div>
         <div class="input-group">
             <span class="input-group-btn">
-                <label class="btn btn-default" btn-radio="'URL'" ng-model="selectedSource" for="sourceUrl" ng-disabled="!sources.url">URL</label>
+                <label class="btn btn-default" btn-radio="'URL'" ng-model="selected.source" for="sourceUrl" ng-disabled="!sources.url">URL</label>
             </span>
             <input id="sourceUrl" type="text" class="form-control" ng-model="sources.url" />
         </div>
         <div class="input-group">
             <span class="input-group-btn">
-                <label class="btn btn-default" btn-radio="'GDrive'" ng-model="selectedSource" ng-disabled="!sources.gdrive.name">GDrive</label>
+                <label class="btn btn-default" btn-radio="'GDrive'" ng-model="selected.source" ng-disabled="!sources.gdrive.name">GDrive</label>
             </span>
             <input type="text" class="form-control" ng-model="sources.gdrive.name" readonly />
             <span class="input-group-btn">
@@ -21,7 +21,7 @@
         </div>
         <div class="input-group" file-dropzone="sources.file">
             <span class="input-group-btn">
-                <label class="btn btn-default" btn-radio="'File'" ng-model="selectedSource" ng-disabled="!sources.file.name">File</label>
+                <label class="btn btn-default" btn-radio="'File'" ng-model="selected.source" ng-disabled="!sources.file.name">File</label>
             </span>
             <input type="text" class="form-control" ng-model="sources.file.name" readonly />
             <span class="input-group-btn">
@@ -36,13 +36,13 @@
     <div>
         <div class="input-group">
             <span class="input-group-btn">
-                <label class="btn btn-default" ng-model="selectedCredentials.password" for="credPassword" btn-checkbox ng-disabled="!credentials.password">Password</label>
+                <label class="btn btn-default" ng-model="selected.credentials.password" for="credPassword" btn-checkbox ng-disabled="!credentials.password">Password</label>
             </span>
             <input id="credPassword" type="password" class="form-control" ng-model="credentials.password" />
         </div>
         <div class="input-group" file-dropzone="credentials.file">
             <span class="input-group-btn">
-                <label class="btn btn-default" ng-model="selectedCredentials.file" btn-checkbox  ng-disabled="!credentials.file.name">Key File</label>
+                <label class="btn btn-default" ng-model="selected.credentials.file" btn-checkbox  ng-disabled="!credentials.file.name">Key File</label>
             </span>
             <input type="text" class="form-control" ng-model="credentials.file.name" readonly />
             <span class="input-group-btn">

@@ -8,40 +8,45 @@ var openController = BrowsePassControllers.controller('OpenController',
             $scope.sources.file = {};
             $scope.sources.gdrive = {};
             $scope.sources.url = $location.hash();
-            $scope.selectedSource = null;
+            $scope.selected = {};
+            $scope.selected.source = null;
 
             $scope.credentials = {};
             $scope.credentials.password = '';
             $scope.credentials.file = {};
-            $scope.selectedCredentials = {};
+            $scope.selected.credentials = {};
         }
 
         $scope.clear();
+        $scope.sources.url = 'test/quick.kdbx';
+        $scope.selected.source = 'URL';
+        $scope.credentials.password = 'password';
+        $scope.selected.credentials.password = true;
 
         $scope.$watch('sources.file', function(newValue, oldValue) {
             if (newValue != oldValue && newValue.hasOwnProperty('name')) {
-                $scope.selectedSource = 'File';
+                $scope.selected.source = 'File';
             }
         }, true);
 
         $scope.$watch('sources.url', function(newValue, oldValue) {
             if (newValue != oldValue) {
-                $scope.selectedSource = 'URL';
+                $scope.selected.source = 'URL';
             }
             if ($scope.sources.url.trim().length == 0) {
-                $scope.selectedSource = null;
+                $scope.selected.source = null;
             }
         });
 
         $scope.$watch('credentials.password', function(newValue, oldValue) {
             if (newValue != oldValue) {
-                $scope.selectedCredentials.password = newValue.length > 0;
+                $scope.selected.credentials.password = newValue.length > 0;
             }
         });
 
         $scope.$watch('credentials.file', function(newValue, oldValue) {
             if (newValue != oldValue && newValue.hasOwnProperty('name')) {
-                $scope.selectedCredentials.file = true;
+                $scope.selected.credentials.file = true;
             }
         }, true);
 
@@ -55,10 +60,10 @@ var openController = BrowsePassControllers.controller('OpenController',
             $scope.loading = true;
             function loadStream(stream) {
                 var key = '';
-                if ($scope.selectedCredentials.password) {
+                if ($scope.selected.credentials.password) {
                     key += readPassword($scope.credentials.password);
                 }
-                if ($scope.selectedCredentials.file) {
+                if ($scope.selected.credentials.file) {
                     var keystream = $scope.credentials.file.data
                     keystream = new jDataView(keystream, 0, keystream.byteLength, true);
                     key += readKeyFile(keystream);
@@ -97,10 +102,10 @@ var openController = BrowsePassControllers.controller('OpenController',
                         $scope.loading = false;
                     });
             }
-            if ($scope.selectedSource == 'URL') {
+            if ($scope.selected.source == 'URL') {
                 loadUrl();
-            } else if ($scope.selectedSource == 'File' || $scope.selectedSource == 'GDrive') {
-                var stream = $scope.sources[$scope.selectedSource.toLowerCase()].data;
+            } else if ($scope.selected.source == 'File' || $scope.selected.source == 'GDrive') {
+                var stream = $scope.sources[$scope.selected.source.toLowerCase()].data;
                 stream = new jDataView(stream, 0, stream.byteLength, true);
                 loadStream(stream);
             } else {
@@ -127,7 +132,7 @@ var openController = BrowsePassControllers.controller('OpenController',
                 function(name, data, status, headers, config) {
                     $scope.sources.gdrive.name = name;
                     $scope.sources.gdrive.data = data;
-                    $scope.selectedSource = 'GDrive';
+                    $scope.selected.source = 'GDrive';
                 },
                 function(type, response) {
                     if (type == 'data' || type == 'metadata') {
