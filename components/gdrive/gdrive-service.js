@@ -70,7 +70,6 @@ var gdriveService = BrowsePassDirectives.service('GoogleDriveService', ['$http',
                 var pickerBuilder = new google.picker.PickerBuilder().
                     addView(docsView).
                     disableFeature(google.picker.Feature.MULTISELECT_ENABLED).
-                    setDeveloperKey(GOOGLE_PUBLIC_API_KEY).
                     setOAuthToken(gapi.auth.getToken().access_token).
                     setCallback(pickerCallback).
                     setTitle('Select a file');

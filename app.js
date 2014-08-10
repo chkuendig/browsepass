@@ -2,8 +2,6 @@
 
 // OAuth -- Client ID for web application
 var GOOGLE_API_CLIENT_ID = '498877584358-u850sitcvk6em4qq7o5o9a2i52b3aofv.apps.googleusercontent.com';
-// Public API access -- Key for browser applications
-var GOOGLE_PUBLIC_API_KEY = 'AIzaSyDnEug2zqN9DxGozZLb4kMgxFwsq_UivnE';
 
 var BrowsePassApp = angular.module('BrowsePassApp', [
     'ui.bootstrap',
