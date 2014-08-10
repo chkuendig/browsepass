@@ -1,7 +1,8 @@
 'use strict';
 
-var openController = BrowsePassControllers.controller('OpenController', ['$scope', '$http', '$location', 'DialogService', 'VaultService',
-    function($scope, $http, $location, dialogService, vaultService) {
+var openController = BrowsePassControllers.controller('OpenController',
+    ['$scope', '$http', '$location', 'DialogService', 'GoogleDriveService', 'VaultService',
+    function($scope, $http, $location, dialogService, gdriveService, vaultService) {
         $scope.clear = function() {
             $scope.sources = {};
             $scope.sources.file = {};
@@ -120,91 +121,23 @@ var openController = BrowsePassControllers.controller('OpenController', ['$scope
                     'Please try again in a moment.');
                 return;
             }
-
-            function downloadGDriveUrl(name, url) {
-                $http({
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + gapi.auth.getToken().access_token,
-                    },
-                    cache: false,
-                    url: url,
-                    responseType: 'arraybuffer'}).
-                    success(function(data, status, headers, config) {
-                        $scope.sources.gdrive.name = name;
-                        $scope.sources.gdrive.data = data;
-                        $scope.selectedSource = 'GDrive';
-                    }).error(function(data, status, headers, config) {
+            gdriveService.pickFileAndDownload(
+                ['application/vnd.google.drive.ext-type.kdbx', 'application/octet-stream'],
+                '*.kdbx',
+                function(name, data, status, headers, config) {
+                    $scope.sources.gdrive.name = name;
+                    $scope.sources.gdrive.data = data;
+                    $scope.selectedSource = 'GDrive';
+                },
+                function(type, response) {
+                    if (type == 'data' || type == 'metadata') {
                         dialogService.alert('BrowsePass', 'The selected Google Drive file cannot be reached. ' +
                             'This might be an intermitten issue. Please try again in a moment.');
-                    });
-            }
-
-            function onGDriveMetadata(data) {
-                var title = data.title;
-                var downloadUrl = data.downloadUrl;
-                downloadGDriveUrl(title, downloadUrl);
-            }
-
-            function downloadGDriveFile(fileId) {
-                var request = gapi.client.drive.files.get({fileId: fileId});
-                request.execute(onGDriveMetadata);
-            }
-
-            function pickerCallback(data) {
-                if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
-                    var doc = data[google.picker.Response.DOCUMENTS][0];
-                    var fileId = doc[google.picker.Document.ID];
-                    downloadGDriveFile(fileId);
-                }
-            }
-
-            function createPicker() {
-                var MIME_TYPES = ['application/vnd.google.drive.ext-type.kdbx', 'application/octet-stream'];
-                var docsView = new google.picker.DocsView(google.picker.ViewId.DOCS);
-                docsView.setQuery('*.kdbx');
-                docsView.setIncludeFolders(true);
-                var picker = new google.picker.PickerBuilder().
-                    addView(docsView).
-                    disableFeature(google.picker.Feature.MULTISELECT_ENABLED).
-                    setDeveloperKey(GOOGLE_PUBLIC_API_KEY).
-                    setOAuthToken(gapi.auth.getToken().access_token).
-                    setSelectableMimeTypes(MIME_TYPES.join(',')).
-                    setCallback(pickerCallback).
-                    setTitle('Select a KDBX file').
-                    build();
-                picker.setVisible(true);
-            }
-
-            function handleAuthResult(immediate) {
-                function actualHandleAuthResult(authResult) {
-                    if (authResult && !authResult.error) {
-                        createPicker();
-                    } else if (immediate) {
-                        // The immediate authorize call failed. Try non-immediate.
-                        gapi.auth.authorize(
-                            {
-                                'client_id': GOOGLE_API_CLIENT_ID,
-                                'scope': GOOGLE_DRIVE_OAUTH_SCOPES.join(' '),
-                                'immediate': false,
-                            },
-                            handleAuthResult(false)
-                        );
-                    } else {
+                    } else if (type == 'auth') {
                         dialogService.alert('BrowsePass', 'In order to open files in Google Drive, ' +
-                            'you must grant Google Drive access to BrowsePass.');
+                            'you must grant BrowsePass permission to access Google Drive.')
                     }
                 }
-                return actualHandleAuthResult;
-            }
-
-            gapi.auth.authorize(
-                {
-                    'client_id': GOOGLE_API_CLIENT_ID,
-                    'scope': GOOGLE_DRIVE_OAUTH_SCOPES.join(' '),
-                    'immediate': true,
-                },
-                handleAuthResult(true)
             );
         }
     }]);

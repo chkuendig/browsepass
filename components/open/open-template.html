@@ -14,9 +14,9 @@
             </span>
             <input type="text" class="form-control" ng-model="sources.gdrive.name" readonly />
             <span class="input-group-btn">
-                <span class="btn btn-default" ng-click="openGDrive()" ng-disabled="!canOpenGDrive()">
+                <button class="btn btn-default" ng-click="openGDrive()" ng-disabled="!canOpenGDrive()">
                     Browse&hellip;
-                </span>
+                </button>
             </span>
         </div>
         <div class="input-group" file-dropzone="sources.file">
@@ -25,10 +25,10 @@
             </span>
             <input type="text" class="form-control" ng-model="sources.file.name" readonly />
             <span class="input-group-btn">
-                <span class="btn btn-default btn-file">
+                <button class="btn btn-default btn-file">
                     Browse&hellip;
                     <input type="file" class="form-control" file-receiver="sources.file" />
-                </span>
+                </button>
             </span>
         </div>
     </div>

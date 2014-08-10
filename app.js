@@ -31,6 +31,19 @@ function onGoogleApiLoaded(name) {
             $scope.loadedGoogleApis[name] = true;
         });
     }
+    if (name == 'auth') {
+        // Pre-authorize to obtain immediately to obtain a token.
+        // If this succeeds, gapi.auth.getToken() would return non-null.
+        // If it fails, we'll try with immediate=false in the services.
+        // The service cannot try BOTH immediate=true, and immediate=false because
+        // the click event is only tied to one try. And we do not want the user
+        // to click on another button.
+        gapi.auth.authorize({
+            'client_id': GOOGLE_API_CLIENT_ID,
+            'scope': GOOGLE_DRIVE_OAUTH_SCOPES.join(' '),
+            'immediate': true,
+        }, function() { });
+    }
     return updateAppController;
 }
 
