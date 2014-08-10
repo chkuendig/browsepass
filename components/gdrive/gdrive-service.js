@@ -67,15 +67,17 @@ var gdriveService = BrowsePassDirectives.service('GoogleDriveService', ['$http',
                 var docsView = new google.picker.DocsView(google.picker.ViewId.DOCS);
                 docsView.setQuery(query);
                 docsView.setIncludeFolders(true);
-                var picker = new google.picker.PickerBuilder().
+                var pickerBuilder = new google.picker.PickerBuilder().
                     addView(docsView).
                     disableFeature(google.picker.Feature.MULTISELECT_ENABLED).
                     setDeveloperKey(GOOGLE_PUBLIC_API_KEY).
                     setOAuthToken(gapi.auth.getToken().access_token).
-                    setSelectableMimeTypes(mimetypes.join(',')).
                     setCallback(pickerCallback).
-                    setTitle('Select a KDBX file').
-                    build();
+                    setTitle('Select a file');
+                if (mimetypes) {
+                    pickerBuilder.setSelectableMimeTypes(mimetypes.join(','));
+                }
+                var picker = pickerBuilder.build();
                 picker.setVisible(true);
             }
 

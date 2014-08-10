@@ -14,6 +14,7 @@ var openController = BrowsePassControllers.controller('OpenController',
             $scope.credentials = {};
             $scope.credentials.password = '';
             $scope.credentials.file = {};
+            $scope.credentials.gdrive = {};
             $scope.selected.credentials = {};
         }
 
@@ -23,6 +24,11 @@ var openController = BrowsePassControllers.controller('OpenController',
         $scope.credentials.password = 'password';
         $scope.selected.credentials.password = true;
 
+        $scope.$watch('sources.gdrive', function(newValue, oldValue) {
+            if (newValue != oldValue && newValue.hasOwnProperty('name')) {
+                $scope.selected.source = 'GDrive';
+            }
+        }, true);
         $scope.$watch('sources.file', function(newValue, oldValue) {
             if (newValue != oldValue && newValue.hasOwnProperty('name')) {
                 $scope.selected.source = 'File';
@@ -43,7 +49,11 @@ var openController = BrowsePassControllers.controller('OpenController',
                 $scope.selected.credentials.password = newValue.length > 0;
             }
         });
-
+        $scope.$watch('credentials.gdrive', function(newValue, oldValue) {
+            if (newValue != oldValue && newValue.hasOwnProperty('name')) {
+                $scope.selected.credentials.gdrive = true;
+            }
+        }, true);
         $scope.$watch('credentials.file', function(newValue, oldValue) {
             if (newValue != oldValue && newValue.hasOwnProperty('name')) {
                 $scope.selected.credentials.file = true;
@@ -63,13 +73,18 @@ var openController = BrowsePassControllers.controller('OpenController',
                 if ($scope.selected.credentials.password) {
                     key += readPassword($scope.credentials.password);
                 }
+                if ($scope.selected.credentials.gdrive) {
+                    var keystream = $scope.credentials.gdrive.data;
+                    keystream = new jDataView(keystream, 0, keystream.byteLength, true);
+                    key += readKeyFile(keystream);
+                }
                 if ($scope.selected.credentials.file) {
-                    var keystream = $scope.credentials.file.data
+                    var keystream = $scope.credentials.file.data;
                     keystream = new jDataView(keystream, 0, keystream.byteLength, true);
                     key += readKeyFile(keystream);
                 }
                 if (key == '') {
-                    dialogService.alert('BrowsePass', 'Please supply a password, or a key file, or both, to open the vault.');
+                    dialogService.alert('BrowsePass', 'Please supply at least a password, or a key file to open the vault.');
                     $scope.loading = false;
                     return;
                 }
@@ -120,19 +135,17 @@ var openController = BrowsePassControllers.controller('OpenController',
             $scope.loaded = false;
         }
 
-        $scope.openGDrive = function() {
+        $scope.openGDrive = function(destination, mimetypes, query) {
             if (!$scope.canOpenGDrive()) { // This function is in AppController.
                 dialogService.alert('BrowsePass', 'Google Drive API has not been loaded yet. ' +
                     'Please try again in a moment.');
                 return;
             }
             gdriveService.pickFileAndDownload(
-                ['application/vnd.google.drive.ext-type.kdbx', 'application/octet-stream'],
-                '*.kdbx',
+                mimetypes, query,
                 function(name, data, status, headers, config) {
-                    $scope.sources.gdrive.name = name;
-                    $scope.sources.gdrive.data = data;
-                    $scope.selected.source = 'GDrive';
+                    destination.name = name;
+                    destination.data = data;
                 },
                 function(type, response) {
                     if (type == 'data' || type == 'metadata') {
@@ -144,5 +157,15 @@ var openController = BrowsePassControllers.controller('OpenController',
                     }
                 }
             );
+        }
+        $scope.openGDriveKdbx = function(destination) {
+            $scope.openGDrive(
+                destination,
+                ['application/vnd.google.drive.ext-type.kdbx', 'application/octet-stream'],
+                '*.kdbx'
+            );
+        }
+        $scope.openGDriveAll = function(destination) {
+            $scope.openGDrive(destination, null, null);
         }
     }]);

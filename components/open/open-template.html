@@ -14,7 +14,7 @@
             </span>
             <input type="text" class="form-control" ng-model="sources.gdrive.name" readonly />
             <span class="input-group-btn">
-                <button class="btn btn-default" ng-click="openGDrive()" ng-disabled="!canOpenGDrive()">
+                <button class="btn btn-default" ng-click="openGDriveKdbx(sources.gdrive)" ng-disabled="!canOpenGDrive()">
                     Browse&hellip;
                 </button>
             </span>
@@ -39,6 +39,17 @@
                 <label class="btn btn-default" ng-model="selected.credentials.password" for="credPassword" btn-checkbox ng-disabled="!credentials.password">Password</label>
             </span>
             <input id="credPassword" type="password" class="form-control" ng-model="credentials.password" />
+        </div>
+        <div class="input-group" file-dropzone="credentials.gdrive">
+            <span class="input-group-btn">
+                <label class="btn btn-default" ng-model="selected.credentials.gdrive" btn-checkbox  ng-disabled="!credentials.gdrive.name">GDrive</label>
+            </span>
+            <input type="text" class="form-control" ng-model="credentials.gdrive.name" readonly />
+            <span class="input-group-btn">
+                <button class="btn btn-default" ng-click="openGDriveAll(credentials.gdrive)" ng-disabled="!canOpenGDrive()">
+                    Browse&hellip;
+                </button>
+            </span>
         </div>
         <div class="input-group" file-dropzone="credentials.file">
             <span class="input-group-btn">
