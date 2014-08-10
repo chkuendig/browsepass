@@ -19,10 +19,6 @@ var openController = BrowsePassControllers.controller('OpenController',
         }
 
         $scope.clear();
-        $scope.sources.url = 'test/quick.kdbx';
-        $scope.selected.source = 'URL';
-        $scope.credentials.password = 'password';
-        $scope.selected.credentials.password = true;
 
         $scope.$watch('sources.gdrive', function(newValue, oldValue) {
             if (newValue != oldValue && newValue.hasOwnProperty('name')) {
