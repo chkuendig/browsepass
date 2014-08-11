@@ -45,8 +45,15 @@ function onGoogleApiLoaded(name) {
     return updateAppController;
 }
 
-function onGoogleApiScriptLoaded() {
-    gapi.load('auth', {'callback': onGoogleApiLoaded('auth')});
-    gapi.load('picker', {'callback': onGoogleApiLoaded('picker')});
-    gapi.client.load('drive', 'v2', onGoogleApiLoaded('drive'));
+function gapiIsLoaded() {
+    if (!(chrome && chrome.app && chrome.app.runtime)) {
+        gapi.load('auth', {'callback': onGoogleApiLoaded('auth')});
+        gapi.load('picker', {'callback': onGoogleApiLoaded('picker')});
+        gapi.client.load('drive', 'v2', onGoogleApiLoaded('drive'));
+    } else {
+        // In Chrome app, emit fake load events.
+        onGoogleApiLoaded('auth')();
+        onGoogleApiLoaded('picker')();
+        onGoogleApiLoaded('drive')();
+    }
 }

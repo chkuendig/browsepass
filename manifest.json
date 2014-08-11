@@ -8,7 +8,15 @@
       "scripts": ["chrome-app.js"]
     }
   },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjXoXcF8ytmK4D91vNCcjVCMfxwkELiMaDDAerhIfXHQQycWlyVDypY8sBy/6xilJ6kc/rZBYOYLiV2yxYIQnCG77DQteppvtwGVodmwcNFfN/i7OOnuHCuejhotRIyoFyKzKvypq2Mpy79qcNaX0IbVPgRetTcD+9H6tTOS+XyMlHENtQvtY/dqVNg2QlvA4HxHI0Us4VilCMa/qB/duw4d2zbkPC0twmlW03wlbmT4g6cyhNzwxxDLGg9SzNmaIhuFkQ9YHLzZuyeRu340P9PbesFs9R5Nl1yzoAbjpBWgwE5rMRb76b3bEYB73gYIBI4j7TwS+K7930JENXYg4lQIDAQAB",
+  "oauth2": {
+    "client_id": "595395511986-papjag05ej3ailoqqoj01lfhvfvsf5pe.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/drive.readonly"
+    ]
+  },
   "permissions": [
+    "identity",
     "http://*/",
     "https://*/",
     "ftp://*/"
