@@ -1,7 +1,8 @@
 'use strict';
 
-var gdriveService = BrowsePassDirectives.service('GoogleDriveService', ['$http', '$timeout', 'DialogService',
-    function($http, $timeout, dialogService) {
+var gdriveService = BrowsePassDirectives.service('GoogleDriveService',
+    ['$http', '$modal', '$timeout',
+    function($http, $modal, $timeout) {
         var service = {};
         service.pickFileAndDownload = function(mimetypes, query, callback, errback) {
             function downloadGDriveUrl(name, url) {
@@ -30,54 +31,19 @@ var gdriveService = BrowsePassDirectives.service('GoogleDriveService', ['$http',
                     });
             }
 
-            function onGDriveMetadata(response) {
-                if (response.error) {
-                    $timeout(function() {
-                        errback('metadata', {
-                            'response': response
-                        });
-                    })
-                    return;
-                }
-                var title = response.title;
-                var downloadUrl = response.downloadUrl;
-                downloadGDriveUrl(title, downloadUrl);
-            }
-
-            function downloadGDriveMetadata(fileId) {
-                var request = gapi.client.drive.files.get({fileId: fileId});
-                request.execute(onGDriveMetadata);
-            }
-
-            function pickerCallback(data) {
-                if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
-                    var doc = data[google.picker.Response.DOCUMENTS][0];
-                    var fileId = doc[google.picker.Document.ID];
-                    downloadGDriveMetadata(fileId);
-                } else if (data[google.picker.Response.ACTION] == google.picker.Action.CANCEL) {
-                    $timeout(function() {
-                        errback('pick', {
-                            'data': data
-                        });
-                    })
+            function pickerCallback(selectedFile) {
+                if (selectedFile) {
+                    downloadGDriveUrl(selectedFile.title, selectedFile.downloadUrl);
+                } else {
+                    errback('pick', {});
                 }
             }
 
             function createPicker() {
-                var docsView = new google.picker.DocsView(google.picker.ViewId.DOCS);
-                docsView.setQuery(query);
-                docsView.setIncludeFolders(true);
-                var pickerBuilder = new google.picker.PickerBuilder().
-                    addView(docsView).
-                    disableFeature(google.picker.Feature.MULTISELECT_ENABLED).
-                    setOAuthToken(gapi.auth.getToken().access_token).
-                    setCallback(pickerCallback).
-                    setTitle('Select a file');
-                if (mimetypes) {
-                    pickerBuilder.setSelectableMimeTypes(mimetypes.join(','));
-                }
-                var picker = pickerBuilder.build();
-                picker.setVisible(true);
+                var picker = $modal.open({
+                    templateUrl: 'components/gdrive/gdrive-picker-template.html',
+                });
+                picker.result.then(pickerCallback);
             }
 
             function handleAuthResultWithImmediate(immediate) {

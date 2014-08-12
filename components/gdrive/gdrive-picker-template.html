@@ -1,0 +1,28 @@
+<div ng-controller="GDriveController">
+    <div class="modal-header">
+        <h3 class="modal-title">Pick a file...</h3>
+    </div>
+    <div class="modal-body">
+        <div>
+            <ol class="breadcrumb">
+                <li ng-repeat="path in model.paths"><a ng-click="backToParent(path.id)">{{path.path}}</a></li>
+            </ol>
+        </div>
+        <table class="table">
+            <thead><tr><th>Title</th><th>Size/Type</th></tr></thead>
+            <tbody>
+            <tr ng-repeat="folder in model.folders">
+                <td><a ng-click="downToChild(folder)">{{folder.title}}</a></td><td>Folder</td>
+            </tr>
+            <tr ng-repeat="file in model.files" ng-class="{'active': file.id == model.selectedFile.id}" ng-click="toggleFile(file)">
+                <td>{{file.title}}</td>
+                <td>{{file.fileSize}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+        <button class="btn btn-primary" ng-click="okay()">OK</button>
+    </div>
+</div>
