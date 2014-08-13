@@ -46,7 +46,7 @@ var gdriveController = BrowsePassControllers.controller('GDriveController', ['$s
                         var item = jsonResponse.items[i];
                         if (item.mimeType == 'application/vnd.google-apps.folder') {
                             $scope.model.folders.push(item);
-                        } else {
+                        } else if (item.hasOwnProperty('downloadUrl')) {
                             $scope.model.files.push(item);
                         }
                     }
@@ -55,14 +55,15 @@ var gdriveController = BrowsePassControllers.controller('GDriveController', ['$s
                 })
             }
             var lastPath = paths[paths.length - 1];
+            var params = {
+                fields: 'items(id,downloadUrl,fileExtension,fileSize,mimeType,title)',
+                q: '\'' + lastPath.id + '\' in parents and trashed = false',
+            };
             gapi.client.request({
                 method: 'GET',
                 callback: onSearchResult,
                 path: '/drive/v2/files',
-                params: {
-                    fields: 'items(id,downloadUrl,fileExtension,fileSize,mimeType,title)',
-                    q: '\'' + lastPath.id + '\' in parents',
-                },
+                params: params,
                 // body: ..
             });
         }
