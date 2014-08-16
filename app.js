@@ -46,7 +46,7 @@ function onGoogleApiLoaded(name) {
 }
 
 function gapiIsLoaded() {
-    if (!(chrome && chrome.app && chrome.app.runtime)) {
+    if (!(typeof chrome !== 'undefined' && chrome.app && chrome.app.runtime)) {
         gapi.load('auth', {'callback': onGoogleApiLoaded('auth')});
         gapi.load('picker', {'callback': onGoogleApiLoaded('picker')});
         gapi.client.load('drive', 'v2', onGoogleApiLoaded('drive'));

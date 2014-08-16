@@ -22,7 +22,7 @@ var fieldRendererDirective = BrowsePassDirectives.directive('fieldRenderer', ['$
                     }, 10000);
                 }
                 scope.select = function() {
-                    var selectElem = element.children()[1].children[0];
+                    var selectElem = element.children()[1].children[0].children[0];
                     var range = $window.document.createRange();
                     range.selectNodeContents(selectElem);
                     var selection = $window.getSelection();

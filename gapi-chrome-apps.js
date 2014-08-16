@@ -35,7 +35,7 @@
                     'loading gapi-chrome-apps.js');
 
   // If not running in a chrome packaged app, load web gapi:
-  if (!(chrome && chrome.app && chrome.app.runtime)) {
+  if (!(typeof chrome !== 'undefined' && chrome.app && chrome.app.runtime)) {
     // Load web gapi.
     var script = document.createElement('script');
     script.src = 'https://apis.google.com/js/client.js?onload=gapiIsLoaded';
