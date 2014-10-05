@@ -5,7 +5,7 @@
                 <span ng-switch-when="URL">
                     <a href="{{field.value}}" target="_blank">{{field.value}}</a>
                 </span>
-                <span ng-switch-default>{{field.value}}</span>
+                <span ng-switch-default><pre>{{field.value}}</pre></span>
         </span>
         <button class="btn btn-default" ng-if="masked" ng-click="unmask()">Show</button>
     </td>
