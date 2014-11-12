@@ -9,9 +9,17 @@ var BrowsePassApp = angular.module('BrowsePassApp', [
     'BrowsePassDirectives',
     'BrowsePassServices',
 ]);
-BrowsePassApp.config(function($locationProvider) {
-    $locationProvider.html5Mode(true);
-})
+BrowsePassApp.config(['$compileProvider', '$locationProvider',
+    function($compileProvider, $locationProvider) {
+        $locationProvider.html5Mode(true);
+        $compileProvider.aHrefSanitizationWhitelist(
+            /^\s*(https?|ftp|file|blob):|data:(application\/octet-stream|image\/)/
+        );
+        $compileProvider.imgSrcSanitizationWhitelist(
+            /^\s*(https?|ftp|file|blob):|data:image\//
+        );
+    }
+]);
 var BrowsePassControllers = angular.module('BrowsePassControllers', []);
 var BrowsePassDirectives = angular.module('BrowsePassDirectives', []);
 var BrowsePassServices = angular.module('BrowsePassServices', []);

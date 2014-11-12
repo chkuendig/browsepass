@@ -27,4 +27,10 @@ var entryController = BrowsePassControllers.controller('EntryController', ['$sco
             }
             return fields;
         }
+        $scope.hasBinary = function() {
+            for (var _ in $scope.entry.binaries) {
+                return true;
+            }
+            return false;
+        }
     }]);

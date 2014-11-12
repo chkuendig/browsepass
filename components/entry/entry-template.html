@@ -12,4 +12,12 @@
             <tr ng-repeat="field in getFields(false)" field-renderer="field" />
         </tbody>
     </table>
+    <table class="table" ng-if="hasBinary()">
+        <thead>
+            <tr><th>File name</th><th>Blob</th></tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="binary in entry.binaries" field-renderer="binary" />
+        </tbody>
+    </table>
 </accordion-group>

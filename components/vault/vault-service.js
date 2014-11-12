@@ -75,6 +75,32 @@ var vaultService = BrowsePassServices.factory('VaultService', ['$rootScope',
         service.findEntriesOfNode = function(groupNode) {
             return evaluateXPath(groupNode, 'Entry');
         }
+        service.findBinaryById = function(id) {
+            var binaryNodes = evaluateXPath(service.xml, '//Binaries/Binary');
+            for (var i = 0; i < binaryNodes.length; ++i) {
+                var binaryNode = binaryNodes[i];
+                if (service.getAttribute(binaryNode, null, 'ID') == id) {
+                    var data = binaryNode.textContent;
+                    data = atob(data);
+                    data = data.substring(10);
+                    data = zip_inflate(data);
+                    data = btoa(data);
+                    return data;
+                }
+            }
+        }
+        service.getAttribute = function(node, tag, attribute) {
+            var child = node;
+            if (tag != null) {
+                child = node.getElementsByTagName(tag)[0];
+            }
+            for (var i = 0; i < child.attributes.length; ++i) {
+                if (child.attributes[i].name == attribute) {
+                    return child.attributes[i].value;
+                }
+            }
+            return null;
+        }
         service.getText = function(node, tag) {
             var child = node.getElementsByTagName(tag)[0];
             return child.textContent;
@@ -98,16 +124,9 @@ var vaultService = BrowsePassServices.factory('VaultService', ['$rootScope',
             return groups;
         }
         service.isProtected = function(node) {
-            var valueNode = node.getElementsByTagName('Value')[0];
-            for (var i = 0; i < valueNode.attributes.length; i++) {
-                if (valueNode.attributes[i].name == 'Protected' &&
-                    valueNode.attributes[i].value == 'True') {
-                    return true;
-                }
-            }
-            return false;
+            return service.getAttribute(node, 'Value', 'Protected') == 'True';
         }
-        service.getFields = function(entryNode) {
+        service.getEntryFields = function(entryNode) {
             var fields = {};
             var stringNodes = evaluateXPath(entryNode, 'String');
             for (var i = 0; i < stringNodes.length; i++) {
@@ -122,6 +141,21 @@ var vaultService = BrowsePassServices.factory('VaultService', ['$rootScope',
             }
             return fields;
         }
+        service.getEntryBinaries = function(entryNode) {
+            var binaries = {};
+            var binaryNodes = evaluateXPath(entryNode, 'Binary');
+            for (var i = 0; i < binaryNodes.length; i++) {
+                var binaryNode = binaryNodes[i];
+                var key = this.getText(binaryNode, 'Key');
+                var ref = service.getAttribute(binaryNode, 'Value', 'Ref');
+                binaries[key] = {
+                    'name': key,
+                    'value': service.findBinaryById(ref),
+                    'blob': true,
+                }
+            }
+            return binaries;
+        }
         service.getEntries = function(uuid) {
             if (!service.xml) {
                 return null;
@@ -133,7 +167,8 @@ var vaultService = BrowsePassServices.factory('VaultService', ['$rootScope',
                 var entryNode = entryNodes[i];
                 var entry = {
                     uuid: this.getText(entryNode, 'UUID'),
-                    fields: this.getFields(entryNode),
+                    fields: this.getEntryFields(entryNode),
+                    binaries: this.getEntryBinaries(entryNode),
                 }
                 entries.push(entry);
             }

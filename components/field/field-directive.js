@@ -29,6 +29,16 @@ var fieldRendererDirective = BrowsePassDirectives.directive('fieldRenderer', ['$
                     selection.removeAllRanges();
                     selection.addRange(range);
                 }
+                scope.isBlob = function() {
+                    return scope.field['blob'];
+                }
+                scope.isImage = function() {
+                    return getMimeType(scope.field['name']).indexOf('image/') == 0;
+                };
+                scope.getDataUrl = function() {
+                    return 'data:' + getMimeType(scope.field['name']) + ';base64,' + scope.field['value'];
+                }
+
             },
         }
     }]);

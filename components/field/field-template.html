@@ -1,12 +1,22 @@
 <tr>
     <td>{{field.name}}</td>
     <td>
-        <span ng-if="!masked" ng-click="select()" ng-switch="field.name">
-                <span ng-switch-when="URL">
-                    <a href="{{field.value}}" target="_blank">{{field.value}}</a>
-                </span>
-                <span ng-switch-default class="bp-field-value">{{field.value}}</span>
-        </span>
-        <button class="btn btn-default" ng-if="masked" ng-click="unmask()">Show</button>
+        <div ng-if="isBlob()">
+            <div ng-if="isImage()">
+                <a href="{{getDataUrl()}}" target="_blank"><img ng-if="isImage()" src="{{getDataUrl()}}" width="200px" alt="{{field.name}}" title="{{field.name}}" /></a>
+            </div>
+            <div ng-if="!isImage()">
+                <a href="{{getDataUrl()}}" target="_blank" download="{{field.name}}" title="{{field.name}}">Download</a>
+            </div>
+        </div>
+        <div ng-if="!isBlob()">
+            <span ng-if="!masked" ng-click="select()" ng-switch="field.name">
+                    <span ng-switch-when="URL">
+                        <a href="{{field.value}}" target="_blank">{{field.value}}</a>
+                    </span>
+                    <span ng-switch-default class="bp-field-value">{{field.value}}</span>
+            </span>
+            <button class="btn btn-default" ng-if="masked" ng-click="unmask()">Show</button>
+        </div>
     </td>
 </tr>
