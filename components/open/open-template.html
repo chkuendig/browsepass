@@ -38,7 +38,7 @@
             <span class="input-group-btn">
                 <label class="btn btn-default" ng-model="selected.credentials.password" for="credPassword" btn-checkbox ng-disabled="!credentials.password">Password</label>
             </span>
-            <input id="credPassword" type="password" class="form-control" ng-model="credentials.password" />
+            <input id="credPassword" type="password" class="form-control" ng-keyup="$event.keyCode == 13 && load()" ng-model="credentials.password" />
         </div>
         <div class="input-group" file-dropzone="credentials.gdrive">
             <span class="input-group-btn">
