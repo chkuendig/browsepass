@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "BrowsePass",
   "description": "A read-only, web-enabled version of KeePass",
-  "version": "0.6",
+  "version": "0.7",
   "app": {
     "background": {
       "scripts": ["chrome-app.js"]
@@ -26,9 +26,4 @@
     "48": "icon-48.png",
     "128": "icon-128.png"
   }
-  /*
-  "browser_action": {
-    "default_popup": "browsepass.html"
-  },
-  "content_security_policy": "script-src 'self' https://code.jquery.com; object-src 'self'" */
 }
