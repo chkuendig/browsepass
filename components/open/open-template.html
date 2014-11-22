@@ -10,6 +10,17 @@
         </div>
         <div class="input-group">
             <span class="input-group-btn">
+                <label class="btn btn-default" btn-radio="'Dropbox'" ng-model="selected.source" ng-disabled="!sources.dropbox.name">Dropbox</label>
+            </span>
+            <input type="text" class="form-control" ng-model="sources.dropbox.name" readonly />
+           <span class="input-group-btn">
+               <button class="btn btn-default" ng-click="openDropboxKdbx(sources.dropbox)" ng-disabled="!canOpenDropbox()">
+                   Browse&hellip;
+               </button>
+           </span>
+        </div>
+        <div class="input-group">
+            <span class="input-group-btn">
                 <label class="btn btn-default" btn-radio="'GDrive'" ng-model="selected.source" ng-disabled="!sources.gdrive.name">GDrive</label>
             </span>
             <input type="text" class="form-control" ng-model="sources.gdrive.name" readonly />
@@ -39,6 +50,17 @@
                 <label class="btn btn-default" ng-model="selected.credentials.password" for="credPassword" btn-checkbox ng-disabled="!credentials.password">Password</label>
             </span>
             <input id="credPassword" type="password" class="form-control" ng-keyup="$event.keyCode == 13 && load()" ng-model="credentials.password" />
+        </div>
+        <div class="input-group" file-dropzone="credentials.dropbox">
+            <span class="input-group-btn">
+                <label class="btn btn-default" ng-model="selected.credentials.dropbox" btn-checkbox  ng-disabled="!credentials.dropbox.name">Dropbox</label>
+            </span>
+            <input type="text" class="form-control" ng-model="credentials.dropbox.name" readonly />
+            <span class="input-group-btn">
+                <button class="btn btn-default" ng-click="openDropboxAll(credentials.dropbox)" ng-disabled="!canOpenDropbox()">
+                    Browse&hellip;
+                </button>
+            </span>
         </div>
         <div class="input-group" file-dropzone="credentials.gdrive">
             <span class="input-group-btn">

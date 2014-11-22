@@ -15,6 +15,9 @@ var appController = BrowsePassControllers.controller('AppController', ['$scope',
         $scope.canOpenGDrive = function() {
             return ($scope.loadedGoogleApis.auth && $scope.loadedGoogleApis.picker && $scope.loadedGoogleApis.drive);
         }
+        $scope.canOpenDropbox = function() {
+            return (!(typeof Dropbox === 'undefined') && Dropbox.isBrowserSupported());
+        }
         $scope.isLoaded = function() {
             return vaultService.isLoaded();
         }

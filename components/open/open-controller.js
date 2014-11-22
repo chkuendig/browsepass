@@ -1,12 +1,13 @@
 'use strict';
 
 var openController = BrowsePassControllers.controller('OpenController',
-    ['$scope', '$http', '$location', 'DialogService', 'GoogleDriveService', 'VaultService',
-    function($scope, $http, $location, dialogService, gdriveService, vaultService) {
+    ['$scope', '$http', '$location', 'DialogService', 'GoogleDriveService', 'DropboxService', 'VaultService',
+    function($scope, $http, $location, dialogService, gdriveService, dropboxService, vaultService) {
         $scope.clear = function() {
             $scope.sources = {};
             $scope.sources.file = {};
             $scope.sources.gdrive = {};
+            $scope.sources.dropbox = {};
             $scope.sources.url = $location.hash();
             $scope.selected = {};
             $scope.selected.source = null;
@@ -15,6 +16,7 @@ var openController = BrowsePassControllers.controller('OpenController',
             $scope.credentials.password = '';
             $scope.credentials.file = {};
             $scope.credentials.gdrive = {};
+            $scope.credentials.dropbox = {};
             $scope.selected.credentials = {};
         }
 
@@ -23,6 +25,12 @@ var openController = BrowsePassControllers.controller('OpenController',
         $scope.$watch('sources.gdrive', function(newValue, oldValue) {
             if (newValue != oldValue && newValue.hasOwnProperty('name')) {
                 $scope.selected.source = 'GDrive';
+            }
+        }, true);
+
+        $scope.$watch('sources.dropbox', function(newValue, oldValue) {
+            if (newValue != oldValue && newValue.hasOwnProperty('name')) {
+                $scope.selected.source = 'Dropbox';
             }
         }, true);
         $scope.$watch('sources.file', function(newValue, oldValue) {
@@ -115,7 +123,7 @@ var openController = BrowsePassControllers.controller('OpenController',
             }
             if ($scope.selected.source == 'URL') {
                 loadUrl();
-            } else if ($scope.selected.source == 'File' || $scope.selected.source == 'GDrive') {
+            } else if ($scope.selected.source == 'File' || $scope.selected.source == 'GDrive' || $scope.selected.source == 'Dropbox') {
                 var stream = $scope.sources[$scope.selected.source.toLowerCase()].data;
                 stream = new jDataView(stream, 0, stream.byteLength, true);
                 loadStream(stream);
@@ -163,5 +171,33 @@ var openController = BrowsePassControllers.controller('OpenController',
         }
         $scope.openGDriveAll = function(destination) {
             $scope.openGDrive(destination, null, null);
+        }
+        $scope.openDropbox = function(destination, extensions) {
+			var test = dropboxService;
+			var test2 = gdriveService;
+			var mimetypes = {};
+            dropboxService.pickFileAndDownload(
+               extensions,
+                function(name, data, status, headers, config) {
+                    destination.name = name;
+                    destination.data = data;
+                },
+                function(type, response) {
+                    if (type == 'data' || type == 'metadata') {
+                        dialogService.alert('BrowsePass', 'The selected Dropbox Drive file cannot be reached. ' +
+                            'This might be an intermitten issue. Please try again in a moment.');
+                    } else if (type == 'auth') {
+                        dialogService.alert('BrowsePass', 'No permission to access the selected Dropbox file.')
+                    }
+                  
+                }
+            );
+        }
+        $scope.openDropboxKdbx = function(destination) {
+			
+            $scope.openDropbox(
+                destination,
+                ['.kdbx']
+            );
         }
     }]);
