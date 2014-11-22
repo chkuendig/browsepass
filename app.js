@@ -1,7 +1,7 @@
 'use strict';
 
 // OAuth -- Client ID for web application
-var GOOGLE_API_CLIENT_ID = '498877584358-u850sitcvk6em4qq7o5o9a2i52b3aofv.apps.googleusercontent.com';
+var GOOGLE_API_CLIENT_ID = '607316234488-g4drom65gq573ikf163oa2se0jgl6jbk.apps.googleusercontent.com';
 
 var BrowsePassApp = angular.module('BrowsePassApp', [
     'ui.bootstrap',
